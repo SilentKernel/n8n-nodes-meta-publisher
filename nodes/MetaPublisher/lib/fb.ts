@@ -47,6 +47,33 @@ export async function fbPublishPhoto(
 	return res as FbPhotoResult;
 }
 
+export async function fbPublishMultiPhoto(
+	ctx: IExecuteFunctions,
+	i: number,
+	args: {
+		pageAccessToken: any;
+		pageId: string;
+		photoIds: string[];
+		message?: string;
+	},
+) {
+	const { pageAccessToken, pageId, photoIds, message } = args;
+	const body: any = {
+		attached_media: photoIds.map((id) => ({ media_fbid: id })),
+	};
+	if (message) body.message = message;
+	const res = await apiRequest(
+		ctx,
+		'POST',
+		`/${encodeURIComponent(pageId)}/feed`,
+		{ ...pageAccessToken },
+		body,
+		i,
+	);
+	if (!res?.id) throw new Error('FB multi-photo publish failed: ' + JSON.stringify(res));
+	return res as FbPhotoResult;
+}
+
 export async function fbCreateVideo(
 	ctx: IExecuteFunctions,
 	i: number,

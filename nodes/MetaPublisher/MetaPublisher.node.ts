@@ -12,6 +12,7 @@ import { OPS } from './lib/ops';
 import {
 	PUBLISH_CAROUSEL,
 	PUBLISH_FB_PHOTO,
+	PUBLISH_FB_MULTI_PHOTO,
 	PUBLISH_FB_REEL,
 	PUBLISH_FB_STORY_PHOTO,
 	PUBLISH_FB_STORY_VIDEO,
@@ -123,6 +124,11 @@ export class MetaPublisher implements INodeType {
 				noDataExpression: true,
 				default: 'publishFbPhoto',
 				options: [
+					{
+						name: 'Publish Multi-Photo (FB Page)',
+						value: PUBLISH_FB_MULTI_PHOTO,
+						action: 'Publish multiple photos on facebook page',
+					},
 					{
 						name: 'Publish Photo (FB Page)',
 						value: 'publishFbPhoto',
@@ -464,8 +470,50 @@ export class MetaPublisher implements INodeType {
 				type: 'string',
 				default: '',
 				displayOptions: {
-					show: { inputSource: ['fields'], resource: ['facebook'], operation: [PUBLISH_FB_PHOTO] },
+					show: {
+						inputSource: ['fields'],
+						resource: ['facebook'],
+						operation: [PUBLISH_FB_PHOTO, PUBLISH_FB_MULTI_PHOTO],
+					},
 				},
+			},
+
+			// FB Multi-Photo
+			{
+				displayName: 'Photos',
+				name: 'fbPhotos',
+				type: 'fixedCollection',
+				typeOptions: { multipleValues: true },
+				default: {},
+				description: 'Photos to attach to a single multi-photo post (2 or more). Each must be under 10MB.',
+				displayOptions: {
+					show: {
+						inputSource: ['fields'],
+						resource: ['facebook'],
+						operation: [PUBLISH_FB_MULTI_PHOTO],
+					},
+				},
+				options: [
+					{
+						displayName: 'Photo',
+						name: 'photo',
+						values: [
+							{
+								displayName: 'Image URL',
+								name: 'imageUrl',
+								type: 'string',
+								default: '',
+								required: true,
+							},
+							{
+								displayName: 'Caption',
+								name: 'caption',
+								type: 'string',
+								default: '',
+							},
+						],
+					},
+				],
 			},
 
 			// FB Video
@@ -809,6 +857,16 @@ export class MetaPublisher implements INodeType {
 							const imageUrl = job.imageUrl ?? (this.getNodeParameter('imageUrl', i) as string);
 							const caption = job.caption ?? (this.getNodeParameter('caption', i, '') as string);
 							return OPS.publishFbPhoto(this, i, { pageId, imageUrl, caption });
+						}
+						case PUBLISH_FB_MULTI_PHOTO: {
+							const rawPhotos = job.items ?? (this.getNodeParameter('fbPhotos', i, {}) as any);
+							const items = Array.isArray(rawPhotos)
+								? rawPhotos
+								: Array.isArray(rawPhotos?.photo)
+									? rawPhotos.photo
+									: [];
+							const caption = job.caption ?? (this.getNodeParameter('caption', i, '') as string);
+							return OPS.publishFbMultiPhoto(this, i, { pageId, items, caption });
 						}
 						case PUBLISH_FB_VIDEO: {
 							const videoUrl = job.videoUrl ?? (this.getNodeParameter('videoUrl', i) as string);

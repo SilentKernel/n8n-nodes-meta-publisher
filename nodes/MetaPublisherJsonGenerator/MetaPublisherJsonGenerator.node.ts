@@ -17,6 +17,7 @@ import {
 	EXAMPLE_VIDEO_URL,
 	PUBLISH_CAROUSEL,
 	PUBLISH_FB_PHOTO,
+	PUBLISH_FB_MULTI_PHOTO,
 	PUBLISH_FB_REEL,
 	PUBLISH_FB_STORY_PHOTO,
 	PUBLISH_FB_STORY_VIDEO,
@@ -329,6 +330,7 @@ export class MetaPublisherJsonGenerator implements INodeType {
 				type: 'multiOptions',
 				default: [],
 				options: [
+					{ name: 'Publish Multi-Photo', value: PUBLISH_FB_MULTI_PHOTO },
 					{ name: 'Publish Photo', value: PUBLISH_FB_PHOTO },
 					{ name: 'Publish Reel', value: PUBLISH_FB_REEL },
 					{ name: 'Publish Story Photo', value: PUBLISH_FB_STORY_PHOTO },
@@ -336,6 +338,24 @@ export class MetaPublisherJsonGenerator implements INodeType {
 					{ name: 'Publish Video', value: PUBLISH_FB_VIDEO },
 				],
 				displayOptions: { show: { resources: ['facebook'] } },
+			},
+			{
+				displayName: 'FB Multi-Photo Items',
+				name: 'fbPhotos',
+				type: 'fixedCollection',
+				typeOptions: { multipleValues: true },
+				default: {},
+				displayOptions: { show: { fbOps: [PUBLISH_FB_MULTI_PHOTO] } },
+				options: [
+					{
+						displayName: 'Photo',
+						name: 'photo',
+						values: [
+							{ displayName: 'Image URL', name: 'imageUrl', type: 'string', default: '' },
+							{ displayName: 'Caption (Optional)', name: 'caption', type: 'string', default: '' },
+						],
+					},
+				],
 			},
 			{
 				displayName: 'Page ID',
@@ -633,6 +653,7 @@ export class MetaPublisherJsonGenerator implements INodeType {
 				const pageId = this.getNodeParameter('pageId', i, '') as string;
 				const fbTitle = this.getNodeParameter('fbTitle', i, '') as string;
 				const fbDescription = this.getNodeParameter('fbDescription', i, '') as string;
+				const fbPhotosCol = (this.getNodeParameter('fbPhotos', i, {}) as any).photo ?? [];
 
 				const push = (o: any, reqId: boolean, msg: string) => {
 					if (reqId && !pageId) {
@@ -641,6 +662,35 @@ export class MetaPublisherJsonGenerator implements INodeType {
 					}
 					jobs.push(o);
 				};
+
+				if (fbOps.includes(PUBLISH_FB_MULTI_PHOTO)) {
+					const photos = fbPhotosCol.length
+						? fbPhotosCol.map((p: any) => ({ imageUrl: p.imageUrl, caption: p.caption }))
+						: includeExamples
+							? [
+									{ imageUrl: EXAMPLE_IMAGE_URL, caption: EXAMPLE_CAPTION },
+									{ imageUrl: EXAMPLE_IMAGE_URL, caption: EXAMPLE_CAPTION },
+								]
+							: [];
+					if (photos.length >= 2) {
+						push(
+							{
+								id: 'facebook-multi-photo',
+								resource: 'facebook',
+								operation: PUBLISH_FB_MULTI_PHOTO,
+								pageId,
+								items: photos,
+								caption: includeExamples ? caption || EXAMPLE_CAPTION : caption,
+							},
+							true,
+							'FB: pageId is required for publishFbMultiPhoto',
+						);
+					} else if (!skipMissing) {
+						new NodeOperationError(this.getNode(), 'FB: Multi-Photo requires at least 2 items', {
+							itemIndex: i,
+						});
+					}
+				}
 
 				if (fbOps.includes(PUBLISH_FB_PHOTO) && (imageUrl || includeExamples)) {
 					push(

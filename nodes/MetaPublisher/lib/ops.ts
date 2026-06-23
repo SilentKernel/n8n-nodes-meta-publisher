@@ -5,6 +5,7 @@ import type { PublishResult, CarouselItem } from './types';
 import { igCreateContainer, igGetStatus, igPublish, igGetPermalink } from './ig';
 import {
 	fbPublishPhoto,
+	fbPublishMultiPhoto,
 	fbCreateVideo,
 	fbGetVideoStatus,
 	fbGetPermalink,
@@ -373,6 +374,54 @@ export const OPS = {
 			type: 'image',
 			publishResult,
 			published: true,
+			permalink,
+		};
+	},
+
+	async publishFbMultiPhoto(
+		ctx: IExecuteFunctions,
+		i: number,
+		a: { pageId: string; items: { imageUrl: string; caption?: string }[]; caption?: string },
+	): Promise<PublishResult> {
+		const pageAccessToken = await fbGetPageAccessToken(ctx, i, {
+			pageId: a.pageId,
+		});
+
+		// 1) Upload each photo unpublished to collect its media id
+		const photoIds: string[] = [];
+		for (const item of a.items) {
+			const uploaded = await fbPublishPhoto(ctx, i, {
+				pageAccessToken,
+				pageId: a.pageId,
+				mediaUrl: item.imageUrl,
+				caption: item.caption,
+				published: false,
+			});
+			if (uploaded?.id) photoIds.push(uploaded.id);
+			await sleep(jitter(2000));
+		}
+
+		// 2) Create a single feed post attaching all uploaded photos
+		const publishResult = await fbPublishMultiPhoto(ctx, i, {
+			pageAccessToken,
+			pageId: a.pageId,
+			photoIds,
+			message: a.caption,
+		});
+
+		await sleep(jitter(5000));
+		const permalink =
+			publishResult && publishResult.id
+				? await fbGetPostPermalink(ctx, publishResult.id, pageAccessToken)
+				: null;
+
+		return {
+			id: 'facebook-multi-photo',
+			platform: 'facebook',
+			type: 'multi_photo',
+			children: photoIds,
+			published: true,
+			publishResult,
 			permalink,
 		};
 	},

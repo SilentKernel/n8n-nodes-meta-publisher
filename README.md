@@ -1,8 +1,10 @@
 ![Banner image](https://user-images.githubusercontent.com/10284570/173569848-c624317f-42b1-45a6-ab09-f0ea3c247648.png)
 
-# n8n-nodes-meta-publisher
+# n8n-nodes-lfrank-meta-publisher
 
 Publish to **Instagram**, **Facebook Pages**, and **Threads** from n8n — including **Images, Videos, Reels, Stories, and Carousels** — with a single, DRY node.
+
+> **Fork by [Ludovic Frank](mailto:ludo@hey.com).** This is a fork of [`n8n-nodes-meta-publisher`](https://github.com/ralphcrisostomo/n8n-nodes-meta-publisher) by Ralf Crisostomo, published as `n8n-nodes-lfrank-meta-publisher`.
 
 > Built from the official **n8n community node starter** structure so you can develop, lint, and ship confidently.&#x20;
 
@@ -67,7 +69,7 @@ Publish to **Instagram**, **Facebook Pages**, and **Threads** from n8n — inclu
 - Publish Video (status polled until ready)
 - Publish Reel (status polled until ready)
 - Publish Story (image/video)
-- ~~Publish Multi-Photo~~ (work in progress...)
+- Publish Multi-Photo (2+ photos in a single post)
 
 **Threads**
 
@@ -82,7 +84,7 @@ Publish to **Instagram**, **Facebook Pages**, and **Threads** from n8n — inclu
 
 ### Community Nodes (recommended for users)
 
-- Install `n8n-node-meta-publisher` via n8n _Community Nodes_.
+- Install `n8n-nodes-lfrank-meta-publisher` via n8n _Community Nodes_.
 
 ![Meta Publisher workflow](docs/images/community-nodes.png)
 

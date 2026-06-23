@@ -1,7 +1,7 @@
 {
-	"name": "n8n-nodes-meta-publisher",
+	"name": "n8n-nodes-lfrank-meta-publisher",
 	"version": "0.15.1",
-	"description": "Publish to Instagram, Facebook Pages, and Threads (images, videos, reels, stories, carousels) via Meta Graph APIs.",
+	"description": "Fork by Ludovic Frank — publish to Instagram, Facebook Pages, and Threads (images, videos, reels, stories, carousels) via Meta Graph APIs.",
 	"keywords": [
 		"n8n-community-node-package",
 		"n8n",
@@ -17,9 +17,15 @@
 	"license": "MIT",
 	"homepage": "https://github.com/ralphcrisostomo/n8n-nodes-meta-publisher",
 	"author": {
-		"name": "Ralf Crisostomo",
-		"email": "rrecrisostomo@gmail.com"
+		"name": "Ludovic Frank",
+		"email": "ludo@hey.com"
 	},
+	"contributors": [
+		{
+			"name": "Ralf Crisostomo",
+			"email": "rrecrisostomo@gmail.com"
+		}
+	],
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/ralphcrisostomo/n8n-nodes-meta-publisher.git"
@@ -38,6 +44,7 @@
 		"format": "prettier nodes credentials --write",
 		"lint": "eslint nodes credentials package.json",
 		"lintfix": "eslint nodes credentials package.json --fix",
+		"test": "npm run build && node --test \"test/**/*.test.js\"",
 		"prepublishOnly": "npm run build && npm run lint -c .eslintrc.prepublish.js nodes credentials package.json"
 	},
 	"n8n": {

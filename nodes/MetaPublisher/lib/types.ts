@@ -17,7 +17,7 @@ export type CarouselItem = {
 export type PublishResult = {
 	id: string;
 	platform: Platform;
-	type: 'image' | 'video' | 'reel' | 'story' | 'carousel' | 'text';
+	type: 'image' | 'video' | 'reel' | 'story' | 'carousel' | 'text' | 'multi_photo';
 	creationId?: string; // IG/Threads container or parent
 	children?: string[]; // for carousels
 	childStatuses?: Record<string, ChildStatus>; // map: childId -> status

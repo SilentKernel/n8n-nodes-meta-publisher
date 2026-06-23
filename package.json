@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-lfrank-meta-publisher",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Fork by Ludovic Frank — publish to Instagram, Facebook Pages, and Threads (images, videos, reels, stories, carousels) via Meta Graph APIs.",
 	"keywords": [
 		"n8n-community-node-package",

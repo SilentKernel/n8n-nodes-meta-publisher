@@ -15,14 +15,14 @@
 		"social media"
 	],
 	"license": "MIT",
-	"homepage": "https://github.com/ralphcrisostomo/n8n-nodes-meta-publisher",
+	"homepage": "https://github.com/SilentKernel/n8n-nodes-meta-publisher#readme",
 	"author": {
 		"name": "Ludovic Frank",
 		"email": "ludo@hey.com"
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/ralphcrisostomo/n8n-nodes-meta-publisher.git"
+		"url": "git+https://github.com/SilentKernel/n8n-nodes-meta-publisher.git"
 	},
 	"engines": {
 		"node": ">=20.15"

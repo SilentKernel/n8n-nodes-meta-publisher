@@ -829,7 +829,7 @@ export class MetaPublisher implements INodeType {
 							const caption = job.caption ?? (this.getNodeParameter('caption', i, '') as string);
 
 							// Extract user tags per item (if supported)
-							const normalizedItems = itemsCol.map((item: any, idx: number) => {
+							const normalizedItems = itemsCol.map((item: any) => {
 								const raw = item.userTags ?? (this.getNodeParameter('userTags', i, {}) as any);
 								const userTags = Array.isArray(raw?.tag) ? raw.tag : [];
 								return { ...item, userTags };

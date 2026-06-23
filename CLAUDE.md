@@ -8,18 +8,27 @@ An n8n community node package that publishes to Instagram, Facebook Pages, and T
 
 ## Commands
 
+This package uses **`@n8n/node-cli`** (`n8n-node …`) for its toolchain — not a hand-rolled tsc/gulp setup.
+
 ```bash
-npm run build      # rimraf dist + tsc + gulp build:icons (copies .svg/.png into dist)
-npm run dev        # tsc --watch
-npm run lint       # eslint nodes credentials package.json (uses eslint-plugin-n8n-nodes-base)
-npm run lintfix    # eslint --fix
-npm run format     # prettier --write on nodes + credentials
+npm run build      # n8n-node build (compiles TS to dist/ + copies icons)
+npm run dev        # n8n-node dev (runs the node in a local n8n)
+npm run lint       # n8n-node lint (eslint via eslint.config.mjs)
+npm run lint:fix   # n8n-node lint --fix
+npm test           # n8n-node build + node --test "test/**/*.test.js"
+npm run release    # n8n-node release (release-it: bump, commit, tag, push → CI publishes)
 ```
 
-There is no test runner. Validation is **build + lint**. `prepublishOnly` re-runs build then lint with the stricter `.eslintrc.prepublish.js`. Requires Node >= 20.15. Lockfile is pnpm (`pnpm-lock.yaml`).
+Requires **Node 22 LTS** (the `@n8n/node-cli` dep `isolated-vm` resolves a prebuilt binary on Node 22; newer Node may try to compile it and fail locally). Lockfile is **npm** (`package-lock.json`).
 
-### Testing locally
-Run `npm run build`, then point an n8n instance at the package via `npm link` / community-node install, and exercise the node in a workflow. There is no automated test harness.
+**Cloud support is disabled** (`n8n.strict: false` in package.json). `eslint.config.mjs` uses `configWithoutCloudSupport` and turns off the strict rules the upstream code doesn't satisfy (pervasive `any`, `no-console`, missing `pairedItem`/`usableAsTool`, identical light/dark icons, credential icon/test). The package is installable as a community node but is **not** eligible for n8n Cloud verification. Re-enable rules in `eslint.config.mjs` if the nodes are brought up to standard.
+
+### CI / release
+- `.github/workflows/ci.yml` — on PRs and pushes to `main`: `npm ci` → lint → build → `node --test`.
+- `.github/workflows/publish.yml` — on a version tag (`*.*.*`): `npm run release`, which in CI runs lint → build → `npm publish` with provenance. Cut a release with `npm run release` locally (needs a clean `main` with an upstream); it bumps/commits/tags/pushes and the tag triggers the publish workflow.
+
+### Testing
+`test/fb-multi-photo.test.js` (Node's built-in `node:test`) runs against the compiled `dist/` with a mocked Graph client. For manual checks, point an n8n instance at the package via `npm link` / community-node install.
 
 ## Architecture
 
